@@ -1,1 +1,1 @@
-from .openseek import DeepSeek
+from .openseek import DeepSeek  # noqa: F401

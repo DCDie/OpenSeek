@@ -1,4 +1,5 @@
 import asyncio
+import contextlib
 import logging
 import os
 import platform
@@ -92,22 +93,18 @@ class DeepSeek:
 
                 self.display = Display()
                 self.display.start()
-            except ModuleNotFoundError:
-                raise MissingInitialization("Install PyVirtualDisplay: `pip install pyvirtualdisplay`")
-            except FileNotFoundError:
-                raise MissingInitialization("Install Xvfb: `sudo apt install xvfb`")
+            except ModuleNotFoundError as e:
+                raise MissingInitialization("Install PyVirtualDisplay: `pip install pyvirtualdisplay`") from e
+            except FileNotFoundError as e:
+                raise MissingInitialization("Install Xvfb: `sudo apt install xvfb`") from e
 
         self.browser = await zendriver.start(chrome_args=self.chrome_args, headless=self.headless)
-        await self.browser.get(
-            "https://chat.deepseek.com/" if not self.chat_id else f"https://chat.deepseek.com/a/chat/s/{self.chat_id}"
-        )
+        await self.browser.get("https://chat.deepseek.com/")
 
         if self.attempt_cf_bypass:
             self.logger.debug("Attempting Cloudflare verification...")
-            try:
+            with contextlib.suppress(Exception):
                 await self.browser.main_tab.verify_cf()
-            except Exception:
-                pass  # Timeout means no verification needed
 
         self._initialized = True
         asyncio.create_task(self._keep_alive())
@@ -201,10 +198,7 @@ class DeepSeek:
             if "server is busy" in markdown.lower():
                 raise ServerDown("Server busy, try again later.")
 
-            return Response(
-                text=markdown,
-                chat_id=self.chat_id,
-            )
+            return Response(text=markdown)
         except asyncio.TimeoutError:
             self.logger.error("Timed out waiting for response.")
             return None
