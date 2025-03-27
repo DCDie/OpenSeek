@@ -1,0 +1,7 @@
+venv
+main.py
+async_main.py
+sync_main.py
+.idea
+dist
+poetry.lock

@@ -1,0 +1,74 @@
+[project]
+name = "openseek"
+version = "0.1.0"
+description = "OpenSeek is an open-source Python library that provides seamless, cost-free access to DeepSeek models. Designed for developers and researchers, it offers a simple and unified interface to interact with various DeepSeek LLMs without requiring API keys, subscriptions, or paid plans."
+authors = [
+    { name = "Daniel Cuzneţov danielcuznetov04@gmail.com" }
+]
+license = { text = "MIT License" }
+license-file = "LICENSE"
+readme = "README.md"
+requires-python = ">=3.10,<4.0"
+url = "https://github.com/DCDie/OpenSeek"
+keywords = ["openseek", "llm", "deep learning", "chatgpt", "openai", "llama", "transformers"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "Natural Language :: English",
+]
+dependencies = [
+    "beautifulsoup4 (>=4.13.3,<5.0.0)",
+    "zendriver (>=0.5.1,<0.6.0)",
+    "inscriptis (>=2.6.0,<3.0.0)",
+    "pyvirtualdisplay (>=3.0,<4.0)"
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.11.2"
+
+[tool.ruff]
+line-length = 120
+indent-width = 4
+target-version = "py310"
+exclude = [
+    "*/migrations/*"
+]
+
+lint.select = [
+    "E", # pycodestyle
+    "F", # Pyflakes
+    "I", # isort
+    "B", # flake8-bugbear
+    "ASYNC", # flake8-async
+    "T10", # flake8-debugger
+    "ISC", # flake8-implicit-str-concat
+    "ICN", # flake8-import-conventions
+    "PIE", # flake8-pie
+    "BLE", # flake8-blind-except
+    "SIM", # flake8-simplify
+    "PTH", # flake8-use-pathlib
+    "FIX", # flake8 - fix me
+    "N", # pep8-naming
+    "UP", # pyupgrade
+]
+lint.ignore = [
+    "ISC001", # Disabled to avoid unexpected behaviour on `ruff format .`
+]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
