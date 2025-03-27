@@ -1,6 +1,6 @@
 [project]
 name = "openseek"
-version = "0.1.3"
+version = "0.1.4"
 description = "OpenSeek is an open-source Python library that provides seamless, cost-free access to DeepSeek models. Designed for developers and researchers, it offers a simple and unified interface to interact with various DeepSeek LLMs without requiring API keys, subscriptions, or paid plans."
 authors = [
     { name = "Daniel Cuzneţov danielcuznetov04@gmail.com" }

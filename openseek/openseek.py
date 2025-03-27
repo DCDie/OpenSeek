@@ -172,6 +172,7 @@ class DeepSeek:
         self.logger.debug(f"Sending message: {message}")
         if slow_mode:
             for char in message:
+                await asyncio.sleep(slow_mode_delay)
                 await textbox.send_keys(char)
                 await asyncio.sleep(slow_mode_delay)
         else:
