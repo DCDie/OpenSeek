@@ -23,7 +23,6 @@ class DeepSeek:
         self,
         email: str,
         password: str,
-        chat_id: str | None = None,
         headless: bool = True,
         verbose: bool = False,
         chrome_args: list[str] | None = None,
@@ -35,7 +34,6 @@ class DeepSeek:
         Args:
             email (str): User email for DeepSeek login.
             password (str): User password for DeepSeek login.
-            chat_id (Optional[str]): Specific chat session ID.
             headless (bool): Whether to run browser in headless mode.
             verbose (bool): Enable detailed logging output.
             chrome_args (Optional[List[str]]): Additional arguments for Chrome.
@@ -49,7 +47,6 @@ class DeepSeek:
 
         self.email = email
         self.password = password
-        self.chat_id = chat_id
         self.headless = headless
         self.verbose = verbose
         self.chrome_args = chrome_args or []
@@ -142,6 +139,7 @@ class DeepSeek:
         search: bool = False,
         timeout: int = 60,
         slow_mode_delay: float = 0.25,
+        chat_id: str | None = None,
     ) -> Response | None:
         """
         Sends a message to DeepSeek and retrieves the response.
@@ -153,6 +151,7 @@ class DeepSeek:
             search (bool): Activate search feature.
             timeout (int): Max wait time for response.
             slow_mode_delay (float): Delay between chars in slow mode.
+            chat_id (str | None): ID of the chat to switch to.
 
         Returns:
             Optional[Response]: The DeepSeek response or None if timed out.
@@ -160,7 +159,14 @@ class DeepSeek:
         if not self._initialized:
             raise MissingInitialization("Call `initialize()` before sending messages.")
 
+        if chat_id is not None:
+            self.logger.debug(f"Switching to chat ID: {chat_id}")
+            await self.browser.main_tab.get(f"https://chat.deepseek.com/a/chat/s/{chat_id}")
+
         tab = self.browser.main_tab
+        # Wait for the chat to load
+        await self.browser.main_tab.wait_for(self.selectors.interactions.textbox, timeout=10)
+        # Select the textbox for sending messages
         textbox = await tab.select(self.selectors.interactions.textbox)
 
         self.logger.debug(f"Sending message: {message}")
@@ -198,10 +204,26 @@ class DeepSeek:
             if "server is busy" in markdown.lower():
                 raise ServerDown("Server busy, try again later.")
 
-            return Response(text=markdown)
+            # Get chat ID from browser url
+            current_url = tab.browser.main_tab.url
+            chat_id = current_url.split("/")[-1]
+
+            return Response(text=markdown, chat_id=chat_id)
         except asyncio.TimeoutError:
             self.logger.error("Timed out waiting for response.")
             return None
+
+    async def start_new_chat(self) -> None:
+        """
+        Starts a new chat session.
+        """
+        if not self._initialized:
+            raise MissingInitialization("Call `initialize()` before starting a new chat.")
+
+        tab = self.browser.main_tab
+        await (await tab.select(self.selectors.interactions.new_chat_button)).click()
+        await tab.wait_for(self.selectors.interactions.textbox, timeout=10)
+        self.logger.debug("New chat started.")
 
     async def close(self) -> None:
         """
@@ -221,6 +243,12 @@ class DeepSeek:
     def send_message_sync(self, *args, **kwargs) -> Response | None:
         """Synchronous wrapper for `send_message`."""
         return self.run_sync(self.send_message(*args, **kwargs))
+
+    def start_new_chat_sync(self) -> None:
+        """
+        Synchronous wrapper for `start_new_chat`.
+        """
+        self.run_sync(self.start_new_chat())
 
     def initialize_sync(self):
         """Synchronous wrapper for `initialize`."""

@@ -14,6 +14,7 @@ class InteractionSelectors:
     textbox: str = 'textarea[class="_27c9245"]'
     send_options_parent: str = 'div[class="ec4f5d61"]'
     send_button: str = 'div[class="_6f28693"]'
+    new_chat_button: str = 'div[class="_5a8ac7a"]'
 
 
 @dataclass
