@@ -220,7 +220,7 @@ class DeepSeek:
             self.display.stop()
 
     @staticmethod
-    def run_sync(coro: asyncio.coroutine) -> any:
+    def run_sync(coro: asyncio.coroutines) -> any:
         """Runs asynchronous coroutine synchronously."""
         return asyncio.get_event_loop().run_until_complete(coro)
 
