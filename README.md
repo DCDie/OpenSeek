@@ -20,10 +20,9 @@ from openseek import DeepSeek
 async def main():
     async with DeepSeek(
             email="your_email@example.com",
-            password="your_password",
-            headless=True
+            password="your_password"
     ) as api:
-        response = await api.send_message("Расскажи мне о квантовой физике")
+        response = await api.send_message("Tell me about quantum physics")
         print(response.text)
 
 
@@ -39,13 +38,12 @@ from openseek import DeepSeek
 def main():
     api = DeepSeek(
         email="your_email@example.com",
-        password="your_password",
-        headless=True
+        password="your_password"
     )
 
     try:
         api.initialize_sync()
-        response = api.send_message_sync("Расскажи мне о квантовой физике")
+        response = api.send_message_sync("Tell me about quantum physics")
         print(response.text)
     finally:
         api.close_sync()
